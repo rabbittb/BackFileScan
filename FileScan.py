@@ -95,28 +95,28 @@ def get_scanlist_from_url(url: str):#组合字典
 
 
 async def start(url):
-    async with g['semaphore']:#信号量 控制总并发量
+    async with g['semaphore']:
         tasks = []
-        scanlist = get_scanlist_from_url(url)# 字典
+        scanlist = get_scanlist_from_url(url)
         for item in scanlist:
-            target_url = url + "/" + item # 组合url
-            task = asyncio.Task(scan(target_url))# 添加任务
+            target_url = url + "/" + item 
+            task = asyncio.Task(scan(target_url))
             tasks.append(task)
-        await asyncio.wait(tasks) #  开始协程任务
-        await session_closed(url) # 断开
+        await asyncio.wait(tasks)
+        await session_closed(url)
         for task in tasks:
-            if task.result():# 获取结果 如果结果不为FALSE 就返回
+            if task.result():
                 return task.result()
-        return False# 否则返回FALSE
+        return False
 
 
-def main(url_list):#创建任务开始任务
+def main(url_list):
     loop = asyncio.get_event_loop()
     tasks = []
     for url in url_list:
-        task = loop.create_task(start(url))#这里不执行
+        task = loop.create_task(start(url))
         tasks.append(task)
-    loop.run_until_complete(asyncio.wait(tasks))#开始执行
+    loop.run_until_complete(asyncio.wait(tasks))
 
 
 if __name__ == "__main__":
